@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-bg+!q2hioq6@6d6@+i8#sdtv-y1rjf8vtd^mdq-p3mhu4639^$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # SECRET_KEY = "dummy"
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["app_redis.onrender.com"]
 
 
 # Application definition
@@ -78,7 +78,8 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],   # Redis must run here
+            # "hosts": [("127.0.0.1", 6379)],   # Redis must run here
+            "hosts": [("redis://redistogo:6379")],
         },
     },
 }
