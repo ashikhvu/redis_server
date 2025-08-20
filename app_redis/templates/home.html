@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Redis + Django Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .box {
+            border: 1px solid black;
+            border-radius: 5px;
+            background-color: black;
+            color: white;
+            padding: 0.5rem;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .col {
+            flex: 1 1 0;
+            min-width: 12rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Redis WebSocket Orders</h1>
+    <p>Total Orders: <span id="order-count">{{ order|length }}</span></p>
+
+    <a href="{% url 'create' %}" style="padding-right: 5rem;">Create</a>
+    <a href="{% url 'delete_all' %}">Delete All</a>
+
+    <br><br>
+
+    <!-- Dynamic Order List -->
+    <div class="row" id="order-list">
+        {% for i in order %}
+        <div class="col">
+            <div class="box">
+                <p>{{ i.item_name }}</p>
+                <p>Qty: {{ i.qty }}</p>
+                <p>Total: {{ i.total }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const socket = new WebSocket("ws://" + window.location.host + "/ws/orders/");
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        // Update count
+        $("#order-count").text(data.count);
+
+        // Update order grid
+        $("#order-list").empty();;
+
+        $.each(data.orders, function(index, order) {
+            $("#order-list").append(`
+            <div class="col">
+                <div class="box">
+                    <p>${ order.item_name }</p>
+                    <p>Qty: ${ order.qty }</p>
+                    <p>Total: ${ order.total }</p>
+                </div>
+            </div>
+            `);
+        });
+    };
+</script>
+
+</body>
+</html>
